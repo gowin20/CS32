@@ -1,0 +1,50 @@
+CS32 Final Notes
+
+Include things that I have written for this class
+
+
+Data Structures (With Runtimes)
+
+	Stacks
+	Queues
+	Priority Queues
+	Vectors
+		Sorted v. Unsorted	
+	Linked Lists
+	Sets
+	Unordered Sets
+	Unordered Multiset
+	Hash Table (map)
+	Unordered Map
+	Unordered Multimap
+	Binary Search Trees (w/ w/o balancing)
+	Heaps
+		Binary Heaps: Minheap and Maxheap
+	
+	
+
+
+
+
+
+
+
+Search Functions
+
+
+
+
+Class Structure
+
+	Steps of Construction/Destruction
+	Member Initialization Lists
+	Inheritance
+	Templates
+
+Resource Management
+Constructing a program with multiple source files
+File I/O
+
+
+Notation
+(prefix, postfix, w/ accompanying algorithms)

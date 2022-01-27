@@ -1,0 +1,179 @@
+GEORGE OWEN -- 405196467
+CS32, David Smallberg
+March 23, 2019
+report.txt
+
+1. Linked List Description
+	My implementation of sequence uses a fairly standard doubly-linked list. The head of the list is a dummy node, pointing to the first value of
+	the list at m_head->next. This means that a newly created/empty sequence will contain a single node, m_head, that points to nothing in 'next' 
+	or 'prev' and contains no value.
+
+	Here's a typical Sequence of size 3:
+
+	=====       =====       =====       =====
+	HEAD  ---->	  0   ---->	  1   ---->	  2
+	(null)<---- "Geo" <---- "Jos" <---- "Fop"
+	=====       =====       =====       =====
+
+
+2. Pseudocode for non-trivial algorithms
+	
+	Sequence::~Sequence():
+		running through the entire sequence:
+			delete the previous node
+		delete the final node
+	
+	Sequence::Sequence(const Sequence& original):
+		set the head and size to the original's
+		running through the entire sequence:
+			make this->next point to a new node
+			set the value to the value of the original at this position
+			connect this->next->prev to this node
+	
+	Sequence& Sequence::operator=(const Sequence &rhs):
+		if they're not already the same
+			copy rhs into a dummy sequence
+			swap the dummy sequence with this sequence
+	
+	
+	int Sequence::insert(int pos, const ItemType& value):
+		cycling through the entire sequence:
+			if the position is equal to the size of the sequence:
+				connect the value to the end (next points to nullptr, prev points to the prev, prev->next points to this)
+			if the position is equal to the desired position:
+				connect the value in between the desired position and the one before it
+				(next points to the item at pos, prev points to next->prev, prev->next points to this, next->prev points to this)
+		increase size by one
+	
+	Sequence::remove(const ItemType& value):
+		cycling through the entire sequence using (i):
+			if the value at this->next is the desired value:
+				erase() the value
+				increment number of erased objs
+				move (i) back one
+			otherwise:
+				move to the next value of the sequence
+		
+	subsequence(const Sequence& seq1, const Sequence& seq2):		
+		cycling through every element of seq1 with (i):
+			cycling through every element of seq2 (j):
+				get the value of sequence one at (i + j)
+				get the value of sequence two at (i)
+				if the values are equal:
+					if we're at the end of sequence two (j == size - 1):
+						set location to (i) and return it
+					continue;
+				otherwise:
+					break from the inner loop
+		
+	interleave(const Sequence& seq1, const Sequence& seq2, Sequence& result):
+		create an empty dummy sequence
+		determine which sequence, seq1 or seq2, has a larger size
+		cycle backwards from (the size of the larger sequence - 1) to zero:
+			if there is a value at this position in sequence two:
+				insert it at position zero of dummy sequence
+			if there is a value at this position in sequence one:
+				insert it at position zero of dummy sequence
+		set result equal to the dummy sequence
+
+3. Test Cases
+	All tests were performed on sequences of strings
+	
+	Sequence u; //an empty sequence
+	Sequence q; //a sequence containing the following: { "quinn", "big U", "shreya", "george", "arthur", "big U", "big U" }
+	Sequence r; //a sequence containing the following: { "big U", "shreya", "george" }
+	ItemType value;
+	
+	//default constructor
+		//newly created sequence:
+		assert(u.size() == 0);             // test size
+		assert(u.empty());                 // test empty
+		assert(u.remove("paratha") == 0);  // nothing to remove 
+
+	//copy constructor
+		sequence t(u); //original is empty
+		t.dump()	//t should be empty
+		sequence t(r); //normal copy
+		t.dump() //t should be the same as r
+
+	//assignment operator
+		q = u //the sequence is empty
+		q.dump() //q should be empty
+		q = q //it's the same sequence
+		q.dump() //q should still be q
+		q = r //normal behavior
+		q.dump() //q should be the same as r
+	
+	//empty
+		assert(u.empty()); //empty sequence
+		assert(!q.empty());//sequence with items
+		
+	//size
+		assert(u.size() == 0); //empty sequence
+		assert(r.size() == 3); //sequence with items
+		
+	//2-argument insert
+		assert(r.insert(0, "mik") == 0); //pos is within the bounds of the sequence
+		assert(r.insert(3, "mik") == 3); //pos is equal to the size of the sequence
+		assert(r.insert(70, "mik") == -1); //pos is outside the bounds (negative or too big)
+		assert(u.insert(0, "mik") == 0); //sequence is empty
+		
+	//1-argument insert
+		assert(r.insert("zzzzzzzzzzzzzzzzz") == 3);//item is larger than all elements of the sequence
+		assert(r.insert("a") == 0);//item is smaller than all elements of the sequence
+		assert();//item lies somewhere in between values
+		assert(u.insert("utsav") == 0); //sequence is empty
+		assert(r.insert("big U) == 0); //another item of the same value is already present
+		
+		
+	//erase
+		assert(r.erase(0)); //erasing an item
+		assert(q.erase(1)); //multiple of the same item present
+		assert(!u.erase(0)); //empty sequence
+		assert(!q.erase(70)); //pos outside bounds
+	
+	//remove
+		assert(r.remove("george") == 1); //removing one item
+		assert(q.remove("big U") == 3); //removing multiple items
+		assert(q.remove("mik!") == 0); //no items found
+		assert(u.remove("mik!") == 0); //empty sequence
+	
+	//get
+		assert(q.get(0, value)); //properly retrieved value
+		assert(!q.get(70, value)); //pos outside bounds 
+	
+	//set
+		assert(r.set(0, "UTSAV!")); //properly set value
+		assert(!r.set(-5, "!VASTU")); //pos outside bounds
+	
+	//find
+		assert(q.find("quinn") == 0);//found value
+		assert(q.find("asdskafjad") == -1); //value not found
+		assert(q.find("big U") == 1); //multiple values within sequence, should return the smallest one
+		
+	//swap
+		//normal case AND sequences of differing size
+			q.swap(r); 
+			q.dump(); //q should be equal to r
+			r.dump(); // r should be equal to q
+		//one empty sequence
+			q.swap(u);
+			q.dump(); //q should be empty
+			u.dump(); //u should be q
+		//two empty sequences
+			u.swap(u);
+			u.dump(); //it's still empty
+
+	//subsequence
+		assert(subsequence(q, r) == 1); //subsequence found
+		r.erase(1);
+		assert(subsequence(q, r) == -1); //subsequence not found
+		assert(subsequence(q, u) == -1); //testing an empty list
+		
+	//interleave
+		interleave(q, r, u); //normal behavior
+		u.dump(); //u should be: { quinn big U big U shreya shreya george george arthur big U big U }
+		interleave(r, r, r); //interleaving the same function with itself
+		r.dump(); //r should be { big U big U shreya shreya george george }
+	
+	

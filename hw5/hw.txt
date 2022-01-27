@@ -1,0 +1,143 @@
+hw.txt
+
+George Owen
+CS32 Homework 5
+
+
+1.
+	a.
+								50
+							  /    \
+                           20        60
+						  /  \	        \
+					   10     40          70
+						\	   / 		 /  \
+						15   30		   65	80
+							/  \		   /
+					      25    39		 71
+						  
+Inserted 80, 65, 71, 15, 39 and 25 in that order
+						   
+	b. Traversals
+		
+		in-order (left, root, right):
+			10
+			15
+			20
+			25
+			30
+			39
+			40
+			50
+			60
+			65
+			70
+			71
+			80
+			
+		pre-order (root, left, right):
+			50
+			20
+			10
+			15
+			40
+			30
+			25
+			39
+			60
+			70
+			65
+			80
+			71
+			
+		post-order (left, right, root):
+			15
+			10
+			25
+			39
+			30
+			40
+			20
+			65
+			71
+			80
+			70
+			60
+			50
+	
+	c. Delete 30, then 20
+								50
+							  /    \
+                           25        60
+						  /  \	        \
+					   10     40          70
+						\	   / 		 /  \
+						15   39		   65	80
+							   		       /
+					            		 71
+	
+2.
+	a.
+		struct Node
+		{
+			int key;
+			Node *left, *right, *parent;
+			
+			Node(int value) : key(value);
+		};
+
+	b.	
+		insert function: Node* insert (node* node, int val)
+			if the node is nullptr (tree is empty)
+				create a new node with value 'val' pointing to nothing, and return that
+			
+			if 'val' is less than the key at the given node
+				create a new node 'left child' by calling insert(node->left, key)
+				make the left pointer of this node point to left child
+				make left child's parent this node
+				
+			if 'val' is greater than the key at the given node
+				create a new node 'right child' by calling insert(node->right, key)
+				make the right pointer of this node point to right child
+				make right child's parent this node
+
+			return a pointer to this node
+
+3.
+	a. 
+		3
+		6
+		2
+		0
+		10
+		4
+		remove the largest (10)
+		9
+		7
+		remove the largest (9)
+		
+		
+									7
+								  /   \
+								 3	   6
+							   /  \   /  
+							  0   2   4   	     
+		
+	b.  
+		Binary Heaps are represented as arrays using level order, so it looks like this:
+		
+		[7, 3, 6, 0, 2, 4]
+		
+	c.  [6, 3, 4, 0, 2]
+		
+
+4.
+	a. O(C + S)
+	b. O(logC + S)
+	c. O(logC + logS)
+	d. O(1 + logS) == O(logS)
+	e. O(1 + 1) == O(1)
+	f. O(logC + S)
+	g. O(1 + SlogS) == O(S logS)
+	h. O(C logS)
+	

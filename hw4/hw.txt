@@ -1,0 +1,141 @@
+Homework 4
+hw.txt
+
+Solutions to problems 2, 4b, 5a, 5b, 6a, and 6b. 
+
+
+2. 
+	Calling the single-argument insert function with <Coord> as the template itemtype causes an error because the function doesn't know
+	how to compare Coords to each other. Within the function, the Coord is placed into a sequence based on its value relative to other
+	elements in the sequence. Comparing two Coords with '>' or '<' isn't something the compiler knows how to do, so it doesn't work. 
+	This can be solved by overloading the operator '>' within Coord and instructing it to compare member variables.
+
+4b.
+	It is not possible to write listAll as a one-argument recursive function, the string path passed is absolutely necessary. This 
+	string is used to keep track of the current domain by adding to it with each call, and it is what is written to cout once the leaf
+	nodes are reached. Without this string, it would not be possible to write complete domain names seperately from each other, and
+	only output such as "cseemath.uclacaltech.edu" would be possible.
+
+5.
+	a. 
+		const int N = some value;
+		bool isFriend[N][N];
+		...
+		int numMutualFriends[N][N];
+		for (int i = 0; i < N; i++) <------------------------------------------------------------------------------- O(N^3)
+		{ <---------------------------------------------------------------------------------- O(N^2)
+			numMutualFriends[i][i] = -1;  // the concept of mutual friend
+										  // makes no sense in this case
+			for (int j = 0; j < N; j++) <---------------------------------------------------- O(N^2)
+			{ <--------------------------------------------------------------- O(N)
+				if (i == j)
+					continue;
+				numMutualFriends[i][j] = 0;
+				for (int k = 0; k < N; k++) // <------------------------------ O(N)
+				{
+					if (k == i  ||  k == j)
+						continue;
+					if (isFriend[i][k]  &&  isFriend[k][j])
+						numMutualFriends[i][j]++;
+				}
+			}
+		}
+		
+			The time complexity of this algorithm is O(N^3). This is due to the fact that the main body of the algorithm is a triple-nested 'for' loop, each of which runs in O(N) time. Running a loop that takes O(N) time N times consumes O(N^2) time, and running that loop N times takes O(N^3) time.
+	
+	
+	b.
+		const int N = some value;
+		bool isFriend[N][N];
+		...
+		int numMutualFriends[N][N];
+		for (int i = 0; i < N; i++)
+		{
+			numMutualFriends[i][i] = -1;  // the concept of mutual friend
+										  // makes no sense in this case
+			for (int j = 0; j < i; j++)   // loop limit is now i, not N
+			{
+				numMutualFriends[i][j] = 0;
+				for (int k = 0; k < N; k++)
+				{
+					if (k == i  ||  k == j)
+						continue;
+					if (isFriend[i][k]  &&  isFriend[k][j])
+						numMutualFriends[i][j]++;
+				}
+				numMutualFriends[j][i] = numMutualFriends[i][j];
+			}
+		}
+		
+			The time complexity of this algorithm is still O(N^3). Even though the middle loop has been changed to run up to 'i' times, instead of 'N', this loop will still run up to N times by the end of it. Realistically, the time is more like O((N^3)/2) or lower, but when N is arbitrarily large the constant division by 2 doesn't really matter.
+			
+
+6.
+	a. 
+	
+		void interleave(const Sequence& seq1, const Sequence& seq2, Sequence& result)
+		{
+			Sequence res;
+
+			int n1 = seq1.size();
+			int n2 = seq2.size();
+			int nmin = (n1 < n2 ? n1 : n2);
+			int resultPos = 0;
+			for (int k = 0; k < nmin; k++) <----------- O(N^2)  
+			{ <----------------------------O(4(N)/4)
+				ItemType v;
+				seq1.get(k, v); <----------------- O(N) time
+				res.insert(resultPos, v); <------- O(N) time when resultPos is large. Realistically more like O(N/2) in this loop
+				resultPos++;
+				seq2.get(k, v); <----------------- O(N) time
+				res.insert(resultPos, v); <------- O(N) time, see above
+				resultPos++;
+			}
+
+			const Sequence& s = (n1 > nmin ? seq1 : seq2);
+			int n = (n1 > nmin ? n1 : n2);
+			for (int k = nmin ; k < n; k++) <---------------- O(N^2)
+			{ <------------ O(2N)
+				ItemType v;
+				s.get(k, v); <-------------------- O(N) time
+				res.insert(resultPos, v); <------- O(N) time
+				resultPos++;
+			}
+
+			result.swap(res); <----------- Constant time
+			//old value of result, now in res, is destroyed when the function returns. Takes O(N) time
+		}
+	
+			The time complexity of this algorithm is O(N^2). This is due to the fact that the 2-argument overload of insert runs in
+			O(N) time, as well as the get function (both functions call the helper function nodeAtPos, which runs in order N time
+			when pos is N). In reality, the time complexity is more like O(2N^2 + C), but we only care about the higher order term.
+		
+	b.
+		void Sequence::interleave(const Sequence& seq1, const Sequence& seq2)
+		{
+			Sequence res;
+
+			Node* p1 = seq1.m_head->m_next;
+			Node* p2 = seq2.m_head->m_next;
+			for ( ; p1 != seq1.m_head  &&  p2 != seq2.m_head; p1 = p1->m_next, p2 = p2->m_next) <----- O(N + 2C) time
+			{ -> constant time
+				res.insertBefore(res.m_head, p1->m_value); <---- constant time
+				res.insertBefore(res.m_head, p2->m_value); <---- constant time
+			}
+
+			Node* p    = (p1 != seq1.m_head ? p1 : p2); //p is the smaller of the two sequences
+			Node* pend = (p1 != seq1.m_head ? seq1 : seq2).m_head; 
+			for ( ; p != pend; p = p->m_next) <--------------------- O(N + C) time
+				res.insertBefore(res.m_head, p->value); <---- constant time
+
+			  // Swap *this with res
+			swap(res); --------------> Constant time
+			  // Old value of *this (now in res) is destroyed when function returns. --> destructor takes O(N) time
+		}
+	
+			The time complexity of this algorithm is O(N). The function contains two for loops and a destructor call, all of which run in some variant of O(N) time. All of the rest of the lines and functions called run in constant time. This is way better than the implementation in part a.
+			
+
+	
+	
+	

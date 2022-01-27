@@ -1,0 +1,88 @@
+struct Target
+{
+//the things within the struct that are accessible to the public. That means the only way to modify things about target is by calling these interfaces/functions
+public:
+	Target(); //Constructor: automatically called every time a target is initialized, named after the struct
+	void move(char dir);
+	int position() const;
+	void replayHistory() const;
+
+//inaccessible to the public. Can't be modified by calling it.
+//data members should always be private
+private:
+	//innvariant: 
+		// history consists only of Rs and Ls
+		// pos == number of Rs in history minus the number of Ls in history
+	int pos;
+	string history;
+};
+//any instance of a variable being called with this-> in these functions could be replaced by simply calling the variable without it, ex. this->pos == pos
+
+Target::Target()
+{
+	this->pos = 0;
+	this->history = "";
+}
+
+//Code to move a target around within a video game. The target is defined as a data type and this fcn is only specifically for targets.
+bool Target::move(char dir)
+{
+	switch (dir)
+	{
+		case 'R':
+		case 'r':
+			this->pos++;
+			break;
+		case 'L':
+		case 'l':
+			this->pos--;
+			break;
+		default:
+			return false;
+	}
+	this->history += toupper(dir);
+	return true;
+}
+
+
+
+int Target::position() const
+{
+	return this->pos;
+}
+
+void Target::replayHistory() const
+{
+	for (int k = 0; k != this->history.size(); k++)
+		cout << this->history[k] << endl;
+}
+
+
+void repeatMove(Target& x, char dir, int nTimes)
+{
+	for (int k = 0; k < nTimes; k++)
+		x.move(dir);
+}
+
+
+int main()
+{
+	Target t;
+	
+	t.move('R');
+	
+	Target t2:
+	t2.init();
+	
+	t2.replayHistory();
+	
+	char ch;
+//	...read a char into ch...
+	if (! t.move(ch))
+		//...problem...
+
+	
+//	t.pos++;
+	t.history += 'R';
+}
+
